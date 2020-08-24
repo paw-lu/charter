@@ -1,0 +1,10 @@
+{
+  "_template": "gh:cjolowicz/cookiecutter-hypermodern-python",
+  "author": "Paulo S. Costa",
+  "email": "Paulo.S.Costa.5@gmail.com",
+  "friendly_name": "Charter",
+  "github_user": "paw-lu",
+  "package_name": "charter",
+  "project_name": "charter",
+  "version": "0.0.0"
+}
