@@ -44,6 +44,7 @@ reorder-python-imports = "^2.3.5"
 pre-commit-hooks = "^3.2.0"
 ipython = "7.16"
 ipdb = "^0.13.3"
+ipykernel = "^5.3.4"
 
 [tool.poetry.scripts]
 charter = "charter.__main__:main"
