@@ -1,6 +1,6 @@
 __pycache__/
-.mypy_cache/
 .ipynb_checkpoints/
+.mypy_cache/
 .virtual_documents/
 /.coverage
 /.nox/
@@ -9,5 +9,6 @@ __pycache__/
 /.vscode/
 /dist/
 /docs/_build/
+/htmlcov
 /src/*.egg-info/
 scratch.*
