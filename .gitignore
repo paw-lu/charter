@@ -1,5 +1,7 @@
 __pycache__/
 .mypy_cache/
+.ipynb_checkpoints/
+.virtual_documents/
 /.coverage
 /.nox/
 /.python-version
@@ -8,3 +10,4 @@ __pycache__/
 /dist/
 /docs/_build/
 /src/*.egg-info/
+scratch.*
