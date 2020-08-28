@@ -11,7 +11,7 @@ from charter import number_line
 def test_make_tick_labels_raises() -> None:
     """It raises a TypeError if not supplied with numerical values."""
     with pytest.raises(TypeError):
-        number_line.make_tick_labels(("a", "b"))
+        number_line.make_tick_labels(("a", "b"))  # type: ignore
 
 
 @pytest.mark.parametrize("number, expected_power", [(1e3, 3), (200e6, 6), (100e-3, -3)])
