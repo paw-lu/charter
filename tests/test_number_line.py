@@ -1,20 +1,10 @@
 """Test the number line generator."""
-from typing import Callable
 from typing import Sequence
 from typing import Tuple
 
 import pytest
 
-from charter import number_line
 from charter.number_line import Ticks
-
-TickGenerator = Callable[[Sequence[float], int], Ticks]
-
-
-@pytest.fixture()
-def init_tick(data: Sequence[float] = (1, 2, 3, 4), max_ticks: int = 10) -> Ticks:
-    """Initialize a Tick class."""
-    return number_line.Ticks(data=data, max_ticks=max_ticks)
 
 
 @pytest.mark.parametrize(
@@ -31,11 +21,11 @@ def test__round_number(
     rounding_terms: Tuple[float],
     allow_equal: bool,
     expected_rounded_num: float,
-    init_tick: TickGenerator,
 ) -> None:
     """It rounds the number."""
+    ticks = Ticks((1, 2, 3, 4), max_ticks=10)
     assert (
-        init_tick._round_number(
+        ticks._round_number(
             number=number,
             limits=limits,
             rounding_terms=rounding_terms,
@@ -45,9 +35,10 @@ def test__round_number(
     )
 
 
-def test__make_tick_positions_min_max_equal(init_tick: TickGenerator) -> None:
+def test__make_tick_positions_min_max_equal() -> None:
     """It returns equal min and maximum ticks when bounds are equal."""
-    assert init_tick._make_tick_positions(data=(10,), max_ticks=20) == [10.0]
+    ticks = Ticks((1, 2, 3, 4), max_ticks=10)
+    assert ticks._make_tick_positions(data=(10,), max_ticks=20) == [10.0]
 
 
 @pytest.mark.parametrize(
@@ -60,29 +51,27 @@ def test__make_tick_positions_min_max_equal(init_tick: TickGenerator) -> None:
     ],
 )
 def test__make_tick_positions(
-    data: Sequence[float],
-    max_ticks: int,
-    expected_ticks: Tuple[float, float, float],
-    init_tick: TickGenerator,
+    data: Sequence[float], max_ticks: int, expected_ticks: Tuple[float, float, float],
 ) -> None:
     """It creates ticks."""
-    assert init_tick._make_tick_positions(
-        data=data, max_ticks=max_ticks
-    ) == pytest.approx(expected_ticks)
+    ticks = Ticks((1, 2, 3, 4), max_ticks=10)
+    assert ticks._make_tick_positions(data=data, max_ticks=max_ticks) == pytest.approx(
+        expected_ticks
+    )
 
 
-def test__make_tick_labels_raises(init_tick: TickGenerator) -> None:
+def test__make_tick_labels_raises() -> None:
     """It raises a TypeError if not supplied with numerical values."""
+    ticks = Ticks((1, 2, 3, 4), max_ticks=10)
     with pytest.raises(TypeError):
-        init_tick._make_tick_labels(("a", "b"))  # type: ignore
+        ticks._make_tick_labels(("a", "b"))  # type: ignore
 
 
 @pytest.mark.parametrize("number, expected_power", [(1e3, 3), (200e6, 6), (100e-3, -3)])
-def test__find_closest_prefix_power(
-    number: float, expected_power: int, init_tick: TickGenerator
-) -> None:
+def test__find_closest_prefix_power(number: float, expected_power: int) -> None:
     """It finds the closest power associated to an SI prefix."""
-    assert expected_power == init_tick._find_closest_prefix_power(number)
+    ticks = Ticks((1, 2, 3, 4), max_ticks=10)
+    assert expected_power == ticks._find_closest_prefix_power(number)
 
 
 @pytest.mark.parametrize(
@@ -104,8 +93,9 @@ def test__find_closest_prefix_power(
     ],
 )
 def test__make_tick_labels(
-    ticks: Sequence[float], expected_tick_labels: Tuple[str], init_tick: TickGenerator
+    ticks: Sequence[float], expected_tick_labels: Tuple[str]
 ) -> None:
     """It formats the ticks for display."""
-    tick_labels = tuple(init_tick._make_tick_labels(ticks))
+    axis_ticks = Ticks((1, 2, 3, 4), max_ticks=10)
+    tick_labels = tuple(axis_ticks._make_tick_labels(ticks))
     assert tick_labels == expected_tick_labels
