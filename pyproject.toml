@@ -61,9 +61,8 @@ source = ["charter"]
 show_missing = true
 fail_under = 100
 
+[tool.pytest.ini_options]
+addopts = '--pdbcls=IPython.terminal.debugger:TerminalPdb'
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-
-[tool.pytest.ini_options]
-addopts = '--pdbcls=IPython.terminal.debugger:TerminalPdb'
