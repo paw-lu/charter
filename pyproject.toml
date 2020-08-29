@@ -20,7 +20,7 @@ Changelog = "https://github.com/paw-lu/charter/releases"
 [tool.poetry.dependencies]
 python = "^3.6.1"
 typer = "^0.3.2"
-toml = "^0.10.1"
+colorama = "^0.4.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0.1"
@@ -45,6 +45,7 @@ pre-commit-hooks = "^3.2.0"
 ipython = "7.16"
 ipdb = "^0.13.3"
 ipykernel = "^5.3.4"
+pygments = "^2.6.1"
 
 [tool.poetry.scripts]
 charter = "charter.__main__:main"
