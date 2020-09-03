@@ -10,7 +10,10 @@ class Ticks:
     """Chart ticks.
 
     Args:
-        data (Sequence[float]): The axis data.
+        min_data (float): The minimum value of the data for the axis
+                dimension.
+        max_data (float): The maximum value of the data for the axis
+            dimension.
         max_ticks (int): The maximum number of ticks.
 
     Attributes:
@@ -19,9 +22,11 @@ class Ticks:
         tick_labels (List[str]): The tick labels in ascending order.
     """
 
-    def __init__(self, data: Sequence[float], max_ticks: int) -> None:
+    def __init__(self, min_data: float, max_data: float, max_ticks: int) -> None:
         """Constructor."""
-        self.tick_positions = self._make_tick_positions(data=data, max_ticks=max_ticks)
+        self.tick_positions = self._make_tick_positions(
+            min_data=min_data, max_data=max_data, max_ticks=max_ticks
+        )
         self.tick_labels = self._make_tick_labels(tick_positions=self.tick_positions)
         pass
 
@@ -142,20 +147,21 @@ class Ticks:
         return rounded_lead * 10.0 ** power
 
     def _make_tick_positions(
-        self, data: Sequence[float], max_ticks: int
+        self, min_data: float, max_data: float, max_ticks: int
     ) -> List[float]:
         """Calculate the positions of the ticks.
 
         Args:
-            data (Sequence[float]): The data for the axis.
+            min_data (float): The minimum value of the data for the axis
+                dimension.
+            max_data (float): The maximum value of the data for the axis
+                dimension.
             max_ticks (int): The maximum number of ticks that may be
                 used.
 
         Returns:
             List[float]: The tick positions in ascending order.
         """
-        min_data = min(data)
-        max_data = max(data)
         if max_data == min_data:
             return [min_data]
         else:
