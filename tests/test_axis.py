@@ -4,12 +4,12 @@ from typing import Tuple
 
 import pytest
 
-from charter import number_line
+from charter import axis
 
 
 def test_ticks_repr() -> None:
     """It returns a string representation of ``Ticks``."""
-    assert str(number_line.Ticks(data=(1, 2, 3), max_ticks=5)) == (
+    assert str(axis.Ticks(data=(1, 2, 3), max_ticks=5)) == (
         "Ticks(tick_positions=(1.0, 1.5, 2.0, 2.5, 3.0),"
         " tick_labels=('1.00', '1.50', '2.00', '2.50', '3.00'))"
     )
@@ -31,7 +31,7 @@ def test__round_number(
     expected_rounded_num: float,
 ) -> None:
     """It rounds the number."""
-    ticks = number_line.Ticks((1, 2, 3, 4), max_ticks=10)
+    ticks = axis.Ticks((1, 2, 3, 4), max_ticks=10)
     assert (
         ticks._round_number(
             number=number,
@@ -45,7 +45,7 @@ def test__round_number(
 
 def test__make_tick_positions_min_max_equal() -> None:
     """It returns equal min and maximum ticks when bounds are equal."""
-    ticks = number_line.Ticks((1, 2, 3, 4), max_ticks=10)
+    ticks = axis.Ticks((1, 2, 3, 4), max_ticks=10)
     assert ticks._make_tick_positions(data=(10,), max_ticks=20) == [10.0]
 
 
@@ -62,7 +62,7 @@ def test__make_tick_positions(
     data: Sequence[float], max_ticks: int, expected_ticks: Tuple[float, float, float],
 ) -> None:
     """It creates ticks."""
-    ticks = number_line.Ticks((1, 2, 3, 4), max_ticks=10)
+    ticks = axis.Ticks((1, 2, 3, 4), max_ticks=10)
     assert ticks._make_tick_positions(data=data, max_ticks=max_ticks) == pytest.approx(
         expected_ticks
     )
@@ -70,7 +70,7 @@ def test__make_tick_positions(
 
 def test__make_tick_labels_raises() -> None:
     """It raises a TypeError if not supplied with numerical values."""
-    ticks = number_line.Ticks((1, 2, 3, 4), max_ticks=10)
+    ticks = axis.Ticks((1, 2, 3, 4), max_ticks=10)
     with pytest.raises(TypeError):
         ticks._make_tick_labels(("a", "b"))  # type: ignore
 
@@ -78,7 +78,7 @@ def test__make_tick_labels_raises() -> None:
 @pytest.mark.parametrize("number, expected_power", [(1e3, 3), (200e6, 6), (100e-3, -3)])
 def test__find_closest_prefix_power(number: float, expected_power: int) -> None:
     """It finds the closest power associated to an SI prefix."""
-    ticks = number_line.Ticks((1, 2, 3, 4), max_ticks=10)
+    ticks = axis.Ticks((1, 2, 3, 4), max_ticks=10)
     assert expected_power == ticks._find_closest_prefix_power(number)
 
 
@@ -104,6 +104,6 @@ def test__make_tick_labels(
     ticks: Sequence[float], expected_tick_labels: Tuple[str]
 ) -> None:
     """It formats the ticks for display."""
-    axis_ticks = number_line.Ticks((1, 2, 3, 4), max_ticks=10)
+    axis_ticks = axis.Ticks((1, 2, 3, 4), max_ticks=10)
     tick_labels = tuple(axis_ticks._make_tick_labels(ticks))
     assert tick_labels == expected_tick_labels
