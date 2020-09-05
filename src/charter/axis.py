@@ -2,7 +2,6 @@
 import bisect
 import math
 from typing import List
-from typing import Sequence
 from typing import Tuple
 
 
@@ -24,10 +23,9 @@ class Ticks:
 
     def __init__(self, min_data: float, max_data: float, max_ticks: int) -> None:
         """Constructor."""
-        self.tick_positions = self._make_tick_positions(
-            min_data=min_data, max_data=max_data, max_ticks=max_ticks
-        )
-        self.tick_labels = self._make_tick_labels(tick_positions=self.tick_positions)
+        self.min_data = min_data
+        self.max_data = max_data
+        self.max_ticks = max_ticks
         pass
 
     def __repr__(self) -> str:
@@ -49,25 +47,13 @@ class Ticks:
         """
         return max(min(int(math.log10(number) // 3 * 3), 24), -24)
 
-    def _make_tick_labels(self, tick_positions: Sequence[float]) -> List[str]:
+    @property
+    def tick_labels(self) -> List[str]:
         """Given a collection of ticks, return a formatted version.
-
-        Args:
-            tick_positions (Sequence[float]): Equally spaced tick
-                positions in ascending order for which the labels will
-                be generated for.
-
-        Raises:
-            TypeError: If ticks are not numerical.
 
         Returns:
             Generator[str, None, None]: The generated tick labels.
         """
-        if any(
-            not isinstance(tick_position, (int, float))
-            for tick_position in tick_positions
-        ):
-            raise TypeError("Only numbers may be formatted.")
         metric_prefix = {
             24: "Y",
             21: "Z",
@@ -86,13 +72,13 @@ class Ticks:
             -21: "z",
             -24: "y",
         }
-        first_tick_position = tick_positions[0]
-        second_tick_position = tick_positions[1]
+        first_tick_position = self.tick_positions[0]
+        second_tick_position = self.tick_positions[1]
         step_size = second_tick_position - first_tick_position
-        axis_divisor_power = self._find_closest_prefix_power(tick_positions[-1])
+        axis_divisor_power = self._find_closest_prefix_power(self.tick_positions[-1])
         axis_prefix = metric_prefix.get(axis_divisor_power, "")
         step_place = math.log10(step_size)
-        number_of_ticks = len(tick_positions)
+        number_of_ticks = len(self.tick_positions)
         if 2 < (axis_divisor_power - math.floor(step_place)):
             tick_divisor_power = self._find_closest_prefix_power(step_size)
             tick_divisor_prefix = metric_prefix.get(tick_divisor_power, "")
@@ -100,13 +86,13 @@ class Ticks:
                 f"{(tick - 10 ** axis_divisor_power) / 10 ** tick_divisor_power:0.2f}"
                 f"{tick_divisor_prefix}"
                 + (i == number_of_ticks - 1) * f" + 1{axis_prefix}"
-                for i, tick in enumerate(tick_positions)
+                for i, tick in enumerate(self.tick_positions)
             ]
         else:
             return [
                 f"{tick / 10 ** axis_divisor_power :0.2f}"
                 + (i == number_of_ticks - 1) * axis_prefix
-                for i, tick in enumerate(tick_positions)
+                for i, tick in enumerate(self.tick_positions)
             ]
 
     def _round_number(
@@ -146,38 +132,29 @@ class Ticks:
         )
         return rounded_lead * 10.0 ** power
 
-    def _make_tick_positions(
-        self, min_data: float, max_data: float, max_ticks: int
-    ) -> List[float]:
+    @property
+    def tick_positions(self) -> List[float]:
         """Calculate the positions of the ticks.
-
-        Args:
-            min_data (float): The minimum value of the data for the axis
-                dimension.
-            max_data (float): The maximum value of the data for the axis
-                dimension.
-            max_ticks (int): The maximum number of ticks that may be
-                used.
 
         Returns:
             List[float]: The tick positions in ascending order.
         """
-        if max_data == min_data:
-            return [min_data]
+        if self.max_data == self.min_data:
+            return [self.min_data]
         else:
-            data_range = max_data - min_data
+            data_range = self.max_data - self.min_data
             rounded_range = self._round_number(
                 data_range,
                 limits=(1.5, 3, 7),
                 rounding_terms=(1, 2, 5),
                 allow_equal=False,
             )
-            spacing = rounded_range / (max_ticks - 1)
+            spacing = rounded_range / (self.max_ticks - 1)
             tick_spacing = self._round_number(
                 spacing, limits=(1, 2, 5), rounding_terms=(1, 2, 5), allow_equal=True
             )
-            first_tick = math.floor(min_data / tick_spacing) * tick_spacing
-            last_tick = math.ceil(max_data / tick_spacing) * tick_spacing
+            first_tick = math.floor(self.min_data / tick_spacing) * tick_spacing
+            last_tick = math.ceil(self.max_data / tick_spacing) * tick_spacing
             number_of_ticks: int = math.ceil(
                 (last_tick - first_tick) / tick_spacing
             ) + 1
