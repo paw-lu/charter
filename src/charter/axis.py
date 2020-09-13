@@ -94,8 +94,8 @@ def _get_axis_label_adjustors(tick_values: List[float]) -> Tuple[float, int]:
 
     Returns:
         (Tuple) Two element tuple containing
-        axis_subtractor (float): The number that will be subtracted
-            from all axis tick labels.
+        axis_subtractor (float): The number that will be subtracted from
+            all axis tick labels.
         tick_divisor_power (int): The tens power to divide all tick
             labels by.
     """
