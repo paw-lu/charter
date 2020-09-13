@@ -92,6 +92,10 @@ def _get_axis_label_adjustors(tick_values: List[float]) -> Tuple[float, int]:
     Args:
         tick_values (List[float]): The tick values in ascending order.
 
+    Raises:
+        ValueError: If ``tick_values`` are not found to be in ascending
+            order.
+
     Returns:
         (Tuple) Two element tuple containing
         axis_subtractor (float): The number that will be subtracted from
@@ -105,8 +109,15 @@ def _get_axis_label_adjustors(tick_values: List[float]) -> Tuple[float, int]:
         tick_divisor_power = axis_divisor_power
         axis_subtractor = 0
     else:
-        step_size = tick_values[1] - tick_values[0]
-        step_place = math.floor(math.log10(step_size))
+        min_step_size = min(
+            next_tick - tick for next_tick, tick in zip(tick_values[1:], tick_values)
+        )
+        if min_step_size < 0:
+            raise ValueError(
+                f"A step was found to be {min_step_size}."
+                " tick_values should be in ascending order."
+            )
+        step_place = math.floor(math.log10(min_step_size))
         if 2 < (axis_divisor_power - step_place):
             axis_range_place = math.floor(math.log10(tick_values[-1] - tick_values[0]))
             tick_place = (
