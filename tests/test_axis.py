@@ -25,6 +25,18 @@ def test_tick_labels() -> None:
     ]
 
 
+def test_unequal_tick_labels() -> None:
+    """It raises a ValueError when value do not match label lengths."""
+    with pytest.raises(ValueError):
+        axis.Ticks(
+            min_data=0,
+            max_data=10,
+            max_ticks=20,
+            tick_values=[1, 2, 3],
+            tick_labels=["1.0", "2.0", "3.0", "4.0"],
+        )
+
+
 @pytest.mark.parametrize(
     "number, limits, rounding_terms, allow_equal, expected_rounded_num",
     [
