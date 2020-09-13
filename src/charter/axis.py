@@ -2,9 +2,13 @@
 import bisect
 import dataclasses
 import math
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
+
+import rich.text
+from rich.text import Text
 
 
 @dataclasses.dataclass()
@@ -74,8 +78,7 @@ def _find_closest_prefix_power(number: float) -> int:
     """Return the closest power associated with an SI prefix.
 
     Args:
-        number (float): A number to find the prefix power
-            for.
+        number (float): A number to find the prefix power for.
 
     Returns:
         int: The closest SI prefix power.
@@ -256,3 +259,125 @@ def _get_tick_values(min_data: float, max_data: float, max_ticks: int) -> List[f
         return [
             first_tick + factor * tick_spacing for factor in range(0, number_of_ticks)
         ]
+
+
+class XAxis(Ticks):
+    """XAxis.
+
+    Args:
+        min_data (float): The minimum value of the data for the axis
+                dimension.
+        max_data (float): The maximum value of the data for the axis
+            dimension.
+        tick_padding (int): The width a tick and its label takes up.
+        tick_margin (int): The minimum spacing between ticks.
+        width (int): The width of the axis in characters.
+        tick_values (List[float], optional): The values for the ticks.
+            By default will be automatically calculated.
+        tick_labels (List[float], optional): The labels for the ticks.
+            By default will be automatically calculated.
+
+    Attributes:
+        tick_values (List[float]): The positions of
+            the ticks in ascending order.
+        tick_labels (List[str]): The tick labels in ascending order.
+    """
+
+    def __init__(
+        self,
+        min_data: float,
+        max_data: float,
+        tick_padding: int,
+        min_tick_margin: int,
+        width: int,
+        tick_values: Optional[List[float]] = None,
+        tick_labels: Optional[List[str]] = None,
+    ) -> None:
+        """Constructor."""
+        self.width = width
+        max_ticks = 1 + (
+            (self.width - (2 * tick_padding + 1))
+            // ((2 * tick_padding + 1) + min_tick_margin)
+        )
+        super().__init__(
+            min_data=min_data,
+            max_data=max_data,
+            max_ticks=max_ticks,
+            tick_values=tick_values,
+            tick_labels=tick_labels,
+        )
+        self.tick_padding = tick_padding
+        self.number_of_xticks = len(self.tick_values) if self.tick_values else 0
+        tick_margin = (
+            self.width - (self.number_of_xticks * (self.tick_padding * 2 + 1))
+        ) // (self.number_of_xticks - 1)
+        self.tick_margin = max(tick_margin, 0)
+        self.tick_positions = range(
+            self.tick_padding,
+            self.width + 1,
+            self.tick_margin + 2 * self.tick_padding + 1,
+        )
+
+    def xline(self, characters: Dict[str, str], show_ticks: bool = True) -> Text:
+        """Create the xline.
+
+        Args:
+            characters (Dict[str, str]): The characters to use in
+                creating the xline. Gets values from "xline" and "xtick"
+                keys.
+            show_ticks (bool): Whether to show ticks on the xline.
+                Defaults to True.
+
+        Returns:
+            Text: The xline row of the chart.
+        """
+        xline_character = characters.get("xline", "━")
+        xtick_character = (
+            characters.get("xtick", "┳") if show_ticks else xline_character
+        )
+        tick_positions = set(self.tick_positions)
+        xline = rich.text.Text.assemble(
+            *(
+                rich.text.Text(xtick_character, style="xtick")
+                if position in tick_positions
+                else rich.text.Text(xline_character, style="xaxis")
+                for position in range(0, self.width)
+            )
+        )
+        return xline
+
+    def xtick_labels(self, characters: Dict[str, str]) -> Text:
+        """Create the xlabels.
+
+        Args:
+            characters (Dict[str, str]): The characters to use in
+                creating the xline. Gets values from "xtick_spacing"
+                keys.
+
+        Returns:
+            Text: The xlabel row of the chart.
+        """
+        xtick_spacing_character = characters.get("xtick_spacing", " ")
+        xtick_labels = rich.text.Text()
+        tick_positions = list(self.tick_positions)
+        tick_labels = self.tick_labels.copy() if self.tick_labels else []
+        position = 0
+        tick_label = tick_labels.pop(0)
+        upcoming_tick_position = tick_positions.pop(0) - (len(tick_label) // 2)
+        while position <= self.width:
+            if position == upcoming_tick_position:
+                xtick_labels.append_text(
+                    rich.text.Text(tick_label, style="xtick_label")
+                )
+                position += max(len(tick_label), 1)
+                if tick_labels and tick_positions:
+                    tick_label = tick_labels.pop(0)
+                    upcoming_tick_position = tick_positions.pop(0) - (
+                        len(tick_label) // 2
+                    )
+            else:
+                xtick_labels.append_text(
+                    rich.text.Text(xtick_spacing_character, style="xtick_spacing")
+                )
+                position += max(len(xtick_spacing_character), 1)
+        return xtick_labels
