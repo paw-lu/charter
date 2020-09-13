@@ -174,3 +174,9 @@ def test__get_axis_label_adjustors(
     assert (actual_axis_subtractor, actual_tick_divisor_power) == pytest.approx(
         (expected_axis_subtractor, expected_tick_divisor_power)
     )
+
+
+def test_not_ascending_order() -> None:
+    """It raises a ValueError if ticks aren't in ascending order."""
+    with pytest.raises(ValueError):
+        axis._get_axis_label_adjustors([1, 2, 3, 6, 5])
