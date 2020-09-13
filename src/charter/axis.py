@@ -3,6 +3,7 @@ import bisect
 import dataclasses
 import math
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 
@@ -16,6 +17,8 @@ class Ticks:
         max_data (float): The maximum value of the data for the axis
             dimension.
         max_ticks (int): The maximum number of ticks.
+        tick_values (Optional[List[float]]): The tick values.
+        tick_labels (Optional[List[str]]): The tick labels.
 
     Attributes:
         tick_values (List[float]): The values of the ticks in ascending
@@ -33,21 +36,29 @@ class Ticks:
     min_data: float
     max_data: float
     max_ticks: int
+    tick_values: Optional[List[float]] = None
+    tick_labels: Optional[List[str]] = None
 
     def __post_init__(self) -> None:
         """Constructor."""
-        self.tick_values = _get_tick_values(
+        self.tick_values = self.tick_values or _get_tick_values(
             min_data=self.min_data, max_data=self.max_data, max_ticks=self.max_ticks
         )
         self.axis_power = _find_closest_prefix_power(self.tick_values[-1])
         self.axis_subtractor, self.tick_divisor_power = _get_axis_label_adjustors(
             self.tick_values
         )
-        self.tick_labels = _make_tick_labels(
+        self.tick_labels = self.tick_labels or _make_tick_labels(
             self.tick_values,
             axis_subtractor=self.axis_subtractor,
             tick_divisor_power=self.tick_divisor_power,
         )
+        if len(self.tick_values) != len(self.tick_labels):
+            raise ValueError(
+                f"{len(self.tick_values)} ticks and"
+                f" {len(self.tick_labels)} tick labels were provided."
+                " They should be equal."
+            )
         self.axis_subtractor_label = (
             None
             if self.axis_subtractor == 0
