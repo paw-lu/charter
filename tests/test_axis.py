@@ -3,6 +3,7 @@ from typing import List
 from typing import Tuple
 
 import pytest
+import rich.text
 
 from charter import axis
 
@@ -180,3 +181,27 @@ def test_not_ascending_order() -> None:
     """It raises a ValueError if ticks aren't in ascending order."""
     with pytest.raises(ValueError):
         axis._get_axis_label_adjustors([1, 2, 3, 6, 5])
+
+
+def test_xline() -> None:
+    """It creates the xline."""
+    width = 100
+    xaxis = axis.XAxis(
+        min_data=0,
+        max_data=10,
+        tick_padding=3,
+        min_tick_margin=1,
+        width=width,
+        tick_values=None,
+        tick_labels=None,
+    )
+    actual_xline = xaxis.xline({"xline": "━", "xtick": "┳"})
+    expected_xline = rich.text.Text.assemble(
+        *(
+            rich.text.Text("┳", style="xtick")
+            if position in set(tick for tick in range(3, width, 9))
+            else rich.text.Text("━", style="xaxis")
+            for position in range(0, width)
+        )
+    )
+    assert actual_xline == expected_xline
