@@ -185,23 +185,29 @@ def test_not_ascending_order() -> None:
 
 def test_xline() -> None:
     """It creates the xline."""
-    width = 100
     xaxis = axis.XAxis(
         min_data=0,
         max_data=10,
         tick_padding=3,
         min_tick_margin=1,
-        width=width,
+        width=24,
         tick_values=None,
         tick_labels=None,
     )
-    actual_xline = xaxis.xline({"xline": "━", "xtick": "┳"})
-    expected_xline = rich.text.Text.assemble(
-        *(
-            rich.text.Text("┳", style="xtick")
-            if position in set(tick for tick in range(3, width, 9))
-            else rich.text.Text("━", style="xaxis")
-            for position in range(0, width)
-        )
+    actual_xline = xaxis.xline({"xline": "━", "xtick": "┳"}, show_ticks=True)
+    xtick_section = rich.text.Text.assemble(
+        rich.text.Text("━━━", style="xaxis", overflow="crop"),
+        rich.text.Text("┳", style="xtick_label", overflow="crop"),
+        rich.text.Text("━━━", style="xaxis", overflow="crop"),
     )
+    margin_section = rich.text.Text("━", style="xaxis", overflow="crop")
+    expected_xline = [
+        rich.text.Text("", style="xaxis", overflow="crop"),
+        xtick_section,
+        margin_section,
+        xtick_section,
+        margin_section,
+        xtick_section,
+        rich.text.Text("━", style="xaxis", overflow="crop"),
+    ]
     assert actual_xline == expected_xline
