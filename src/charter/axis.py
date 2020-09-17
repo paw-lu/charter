@@ -7,7 +7,10 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
+import rich.columns
+import rich.table
 import rich.text
+from rich.table import Column
 from rich.text import Text
 
 
@@ -278,9 +281,28 @@ class XAxis(Ticks):
             By default will be automatically calculated.
 
     Attributes:
-        tick_values (List[float]): The positions of
-            the ticks in ascending order.
-        tick_labels (List[str]): The tick labels in ascending order.
+        width (int): The width of the x axis.
+        tick_padding (int): The space on either side of the actual tick
+            location. Considered to be a part of the tick.
+        number_of_xticks (int): The number of x ticks.
+        tick_margin (int): The spacing between ticks, not including the
+            tick padding.
+        left_padding (int): The spacing on the left of the x axis.
+        right_padding (int): The spacing on the right of the x axis.
+        tick_positions (Generator[int, None, None]): The locations of
+            the actual ticks on the x line.
+        tick_values (List[float]): The values of the ticks in ascending
+            order.
+        axis_power (int): The power of ten in a number.
+        axis_subtractor (float): The number which will be subtracted
+            from all axis values for display.
+        tick_divisor_power (int): The power of ten all tick values will
+            be divided by after being subtracted by the
+            ``axis_subtractor.``
+        tick_labels (List[str]): The tick labels in order.
+        axis_subtractor_label (str): The axis subtractor label.
+        table_columns (List[Column]): The columns that compose the x
+            axis.
     """
 
     def __init__(
@@ -308,17 +330,80 @@ class XAxis(Ticks):
         )
         self.tick_padding = tick_padding
         self.number_of_xticks = len(self.tick_values) if self.tick_values else 0
-        tick_margin = (
-            self.width - (self.number_of_xticks * (self.tick_padding * 2 + 1))
-        ) // (self.number_of_xticks - 1)
+        total_tick_space = self.number_of_xticks * (self.tick_padding * 2 + 1)
+        tick_margin = (self.width - total_tick_space) // (self.number_of_xticks - 1)
         self.tick_margin = max(tick_margin, 0)
+        total_taken_space = total_tick_space + (
+            self.tick_margin * (self.number_of_xticks - 1)
+        )
+        extra_space = self.width - total_taken_space
+        self.left_padding = extra_space // 2
+        self.right_padding = extra_space - self.left_padding
         self.tick_positions = range(
-            self.tick_padding,
+            self.tick_padding + self.left_padding,
             self.width + 1,
             self.tick_margin + 2 * self.tick_padding + 1,
         )
+        self.table_columns = self._make_xaxis_columns(
+            number_of_ticks=self.number_of_xticks,
+            left_padding=self.left_padding,
+            right_padding=self.right_padding,
+            tick_margin=self.tick_margin,
+        )
 
-    def xline(self, characters: Dict[str, str], show_ticks: bool = True) -> Text:
+    def _make_xaxis_columns(
+        self,
+        number_of_ticks: int,
+        left_padding: int,
+        right_padding: int,
+        tick_margin: int,
+    ) -> List[Column]:
+        """Create the columns that compose the x axis.
+
+        Args:
+            number_of_ticks (int): The number of ticks in the axis.
+            left_padding (int): The padding on the left for the x axis.
+            right_padding (int): The padding on the right for the x
+                axis.
+            tick_margin (int): The margin for the ticks.
+
+        Returns:
+            List[Column]: Columns that compose the x axis with
+                corresponding widths.
+        """
+        xaxis_columns = [
+            rich.table.Column(
+                column_number + 1,
+                header="xtick",
+                width=2 * tick_margin + 1,
+                no_wrap=True,
+                justify="center",
+            )
+            if column_number % 2 == 0
+            else rich.table.Column(
+                column_number, header="xtick_margin", width=tick_margin, no_wrap=True,
+            )
+            for column_number in range(2 * number_of_ticks - 1)
+        ]
+        xaxis_columns = (
+            [
+                rich.table.Column(
+                    0, header="left_padding", width=left_padding, no_wrap=True,
+                )
+            ]
+            + xaxis_columns
+            + [
+                rich.table.Column(
+                    len(xaxis_columns) + 1,
+                    header="right_padding",
+                    width=right_padding,
+                    no_wrap=True,
+                )
+            ]
+        )
+        return xaxis_columns
+
+    def xline(self, characters: Dict[str, str], show_ticks: bool = True) -> List[Text]:
         """Create the xline.
 
         Args:
@@ -335,18 +420,53 @@ class XAxis(Ticks):
         xtick_character = (
             characters.get("xtick", "┳") if show_ticks else xline_character
         )
-        tick_positions = set(self.tick_positions)
-        xline = rich.text.Text.assemble(
-            *(
-                rich.text.Text(xtick_character, style="xtick")
-                if position in tick_positions
-                else rich.text.Text(xline_character, style="xaxis")
-                for position in range(0, self.width)
-            )
-        )
+        xline = []
+        for column in self.table_columns:
+            if column.header == "xtick":
+                xline.append(
+                    rich.text.Text.assemble(
+                        rich.text.Text(
+                            self.tick_padding * xline_character,
+                            style="xaxis",
+                            overflow="crop",
+                        ),
+                        rich.text.Text(
+                            xtick_character, style="xtick_label", overflow="crop"
+                        ),
+                        rich.text.Text(
+                            self.tick_padding * xline_character,
+                            style="xaxis",
+                            overflow="crop",
+                        ),
+                    )
+                )
+            elif column.header == "xtick_margin":
+                xline.append(
+                    rich.text.Text(
+                        xline_character * self.tick_margin,
+                        style="xaxis",
+                        overflow="crop",
+                    )
+                )
+            elif column.header == "left_padding":
+                xline.append(
+                    rich.text.Text(
+                        xline_character * self.left_padding,
+                        style="xaxis",
+                        overflow="crop",
+                    )
+                )
+            elif column.header == "right_padding":
+                xline.append(
+                    rich.text.Text(
+                        xline_character * self.right_padding,
+                        style="xaxis",
+                        overflow="crop",
+                    )
+                )
         return xline
 
-    def xtick_labels(self, characters: Dict[str, str]) -> Text:
+    def xtick_labels(self, characters: Dict[str, str]) -> List[Text]:
         """Create the xlabels.
 
         Args:
@@ -358,26 +478,40 @@ class XAxis(Ticks):
             Text: The xlabel row of the chart.
         """
         xtick_spacing_character = characters.get("xtick_spacing", " ")
-        xtick_labels = rich.text.Text()
-        tick_positions = list(self.tick_positions)
+        xtick_labels = []
         tick_labels = self.tick_labels.copy() if self.tick_labels else []
-        position = 0
-        tick_label = tick_labels.pop(0)
-        upcoming_tick_position = tick_positions.pop(0) - (len(tick_label) // 2)
-        while position <= self.width:
-            if position == upcoming_tick_position:
-                xtick_labels.append_text(
-                    rich.text.Text(tick_label, style="xtick_label")
-                )
-                position += max(len(tick_label), 1)
-                if tick_labels and tick_positions:
-                    tick_label = tick_labels.pop(0)
-                    upcoming_tick_position = tick_positions.pop(0) - (
-                        len(tick_label) // 2
+        for column in self.table_columns:
+            if column.header == "xtick":
+                xtick_labels.append(
+                    rich.text.Text(
+                        tick_labels.pop(0),
+                        style="xtick_label",
+                        overflow="ellipsis",
+                        justify="center",
                     )
-            else:
-                xtick_labels.append_text(
-                    rich.text.Text(xtick_spacing_character, style="xtick_spacing")
                 )
-                position += max(len(xtick_spacing_character), 1)
+            elif column.header == "xtick_margin":
+                xtick_labels.append(
+                    rich.text.Text(
+                        xtick_spacing_character * self.tick_margin,
+                        style="xtick_spacing",
+                        overflow="crop",
+                    )
+                )
+            elif column.header == "left_padding":
+                xtick_labels.append(
+                    rich.text.Text(
+                        xtick_spacing_character * self.left_padding,
+                        style="xtick_spacing",
+                        overflow="crop",
+                    )
+                )
+            elif column.header == "right_padding":
+                xtick_labels.append(
+                    rich.text.Text(
+                        xtick_spacing_character * self.right_padding,
+                        style="xtick_spacing",
+                        overflow="crop",
+                    )
+                )
         return xtick_labels
