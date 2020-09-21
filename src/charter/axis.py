@@ -86,7 +86,7 @@ def _find_closest_prefix_power(number: float) -> int:
     Returns:
         int: The closest SI prefix power.
     """
-    return max(min(math.floor(math.log10(number)) // 3 * 3, 24), -24)
+    return max(min(math.floor(math.log10(abs(number))) // 3 * 3, 24), -24)
 
 
 def _get_axis_label_adjustors(tick_values: List[float]) -> Tuple[float, int]:

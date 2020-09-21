@@ -162,6 +162,7 @@ def test__make_tick_labels(
         ([100 + axis_tick * 1e-6 for axis_tick in range(1, 11)], 100, -6),
         ([5_000_003], 0, 6),
         ([5_561_943 + axis_tick for axis_tick in range(6)], 5561940, 0),
+        ([-1e6 + 1, -1e6 + 2, -1e6 + 3], False, False),
     ],
 )
 def test__get_axis_label_adjustors(
@@ -253,3 +254,18 @@ def test_xtick_labels() -> None:
         rich.text.Text("_", style="xtick_spacing", overflow="crop"),
     ]
     assert actual_xtick_lables == expected_xtick_labels
+
+
+# TODO: ZeroDivisionError when minimum tick is set to 1
+# TODO: Negative numbers with axis subtractor?
+# The below gives Zero Division Error
+# axis.XAxis(
+#         min_data=0,
+#         max_data=10,
+#         tick_padding=3,
+#         min_tick_margin=1,
+#         width=10,
+#         tick_values=None,
+#         tick_labels=None,
+#     )
+# Check that width is always completely taken up!
