@@ -1,4 +1,5 @@
 """Test the number line generator."""
+from typing import Dict
 from typing import List
 from typing import Tuple
 
@@ -183,7 +184,11 @@ def test_not_ascending_order() -> None:
         axis._get_axis_label_adjustors([1, 2, 3, 6, 5])
 
 
-def test_xline() -> None:
+@pytest.mark.parametrize(
+    "characters, show_ticks",
+    [({"xline": "━", "xtick": "┳"}, True), ({"xline": "-", "xtick": "|"}, False,)],
+)
+def test_xline(characters: Dict[str, str], show_ticks: bool) -> None:
     """It creates the x line."""
     xaxis = axis.XAxis(
         min_data=0,
@@ -194,13 +199,20 @@ def test_xline() -> None:
         tick_values=None,
         tick_labels=None,
     )
-    actual_xline = xaxis.xline({"xline": "━", "xtick": "┳"}, show_ticks=True)
-    xtick_section = rich.text.Text.assemble(
-        rich.text.Text("━━━", style="xaxis", overflow="crop"),
-        rich.text.Text("┳", style="xtick_label", overflow="crop"),
-        rich.text.Text("━━━", style="xaxis", overflow="crop"),
+    actual_xline = xaxis.xline(characters, show_ticks=show_ticks)
+    tick_padding = rich.text.Text(
+        characters["xline"] * 3, style="xaxis", overflow="crop"
     )
-    margin_section = rich.text.Text("━", style="xaxis", overflow="crop")
+    xtick_section = rich.text.Text.assemble(
+        tick_padding,
+        rich.text.Text(
+            characters["xtick"] if show_ticks else characters["xline"],
+            style="xtick_label",
+            overflow="crop",
+        ),
+        tick_padding,
+    )
+    margin_section = rich.text.Text(characters["xline"], style="xaxis", overflow="crop")
     expected_xline = [
         rich.text.Text("", style="xaxis", overflow="crop"),
         xtick_section,
@@ -208,6 +220,6 @@ def test_xline() -> None:
         xtick_section,
         margin_section,
         xtick_section,
-        rich.text.Text("━", style="xaxis", overflow="crop"),
+        rich.text.Text(characters["xline"], style="xaxis", overflow="crop"),
     ]
     assert actual_xline == expected_xline
