@@ -440,14 +440,6 @@ class XAxis(Ticks):
                         ),
                     )
                 )
-            elif column.header == "xtick_margin":
-                xline.append(
-                    rich.text.Text(
-                        xline_character * self.tick_margin,
-                        style="xaxis",
-                        overflow="crop",
-                    )
-                )
             elif column.header == "left_padding":
                 xline.append(
                     rich.text.Text(
@@ -460,6 +452,14 @@ class XAxis(Ticks):
                 xline.append(
                     rich.text.Text(
                         xline_character * self.right_padding,
+                        style="xaxis",
+                        overflow="crop",
+                    )
+                )
+            else:
+                xline.append(
+                    rich.text.Text(
+                        xline_character * self.tick_margin,
                         style="xaxis",
                         overflow="crop",
                     )
@@ -490,14 +490,6 @@ class XAxis(Ticks):
                         justify="center",
                     )
                 )
-            elif column.header == "xtick_margin":
-                xtick_labels.append(
-                    rich.text.Text(
-                        xtick_spacing_character * self.tick_margin,
-                        style="xtick_spacing",
-                        overflow="crop",
-                    )
-                )
             elif column.header == "left_padding":
                 xtick_labels.append(
                     rich.text.Text(
@@ -510,6 +502,14 @@ class XAxis(Ticks):
                 xtick_labels.append(
                     rich.text.Text(
                         xtick_spacing_character * self.right_padding,
+                        style="xtick_spacing",
+                        overflow="crop",
+                    )
+                )
+            else:
+                xtick_labels.append(
+                    rich.text.Text(
+                        xtick_spacing_character * self.tick_margin,
                         style="xtick_spacing",
                         overflow="crop",
                     )
