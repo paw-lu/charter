@@ -184,7 +184,7 @@ def test_not_ascending_order() -> None:
 
 
 def test_xline() -> None:
-    """It creates the xline."""
+    """It creates the x line."""
     xaxis = axis.XAxis(
         min_data=0,
         max_data=10,
