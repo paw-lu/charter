@@ -223,3 +223,33 @@ def test_xline(characters: Dict[str, str], show_ticks: bool) -> None:
         rich.text.Text(characters["xline"], style="xaxis", overflow="crop"),
     ]
     assert actual_xline == expected_xline
+
+
+def test_xtick_labels() -> None:
+    """It creates the x tick labels."""
+    xaxis = axis.XAxis(
+        min_data=0,
+        max_data=10,
+        tick_padding=3,
+        min_tick_margin=1,
+        width=24,
+        tick_values=None,
+        tick_labels=None,
+    )
+    actual_xtick_lables = xaxis.xtick_labels({"xtick_spacing": "_"})
+    expected_xtick_labels = [
+        rich.text.Text("", style="xtick_spacing", overflow="crop"),
+        rich.text.Text(
+            "0.00", style="xtick_label", overflow="ellipsis", justify="center"
+        ),
+        rich.text.Text("_", style="xtick_spacing", overflow="crop"),
+        rich.text.Text(
+            "5.00", style="xtick_label", overflow="ellipsis", justify="center"
+        ),
+        rich.text.Text("_", style="xtick_spacing", overflow="crop"),
+        rich.text.Text(
+            "10.00", style="xtick_label", overflow="ellipsis", justify="center"
+        ),
+        rich.text.Text("_", style="xtick_spacing", overflow="crop"),
+    ]
+    assert actual_xtick_lables == expected_xtick_labels
