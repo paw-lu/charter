@@ -48,6 +48,7 @@ class Ticks:
 
     def __post_init__(self) -> None:
         """Constructor."""
+        self.max_ticks = max(self.max_ticks, 2)
         self.tick_values = self.tick_values or _get_tick_values(
             min_data=self.min_data, max_data=self.max_data, max_ticks=self.max_ticks
         )
@@ -336,9 +337,9 @@ class XAxis(Ticks):
         total_taken_space = total_tick_space + (
             self.tick_margin * (self.number_of_xticks - 1)
         )
-        extra_space = self.width - total_taken_space
+        extra_space = max(self.width - total_taken_space, 0)
         self.left_padding = extra_space // 2
-        self.right_padding = extra_space - self.left_padding
+        self.right_padding = max(extra_space - self.left_padding, 0)
         self.tick_positions = range(
             self.tick_padding + self.left_padding,
             self.width + 1,
