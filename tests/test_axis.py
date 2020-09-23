@@ -162,7 +162,7 @@ def test__make_tick_labels(
         ([100 + axis_tick * 1e-6 for axis_tick in range(1, 11)], 100, -6),
         ([5_000_003], 0, 6),
         ([5_561_943 + axis_tick for axis_tick in range(6)], 5561940, 0),
-        ([-1e6 + 1, -1e6 + 2, -1e6 + 3], False, False),
+        ([-1e6 + 1, -1e6 + 2, -1e6 + 3], -1e6, 0),
     ],
 )
 def test__get_axis_label_adjustors(
