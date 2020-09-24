@@ -964,7 +964,7 @@ description = "Render rich text, tables, progress bars, syntax highlighting, mar
 name = "rich"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "6.0.0"
+version = "7.0.0"
 
 [package.dependencies]
 colorama = ">=0.4.0,<0.5.0"
@@ -1362,7 +1362,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "d52e41ac1d0c1394b7f76318e2f7a4baf4b234b8678415be4cafde96e15afd87"
+content-hash = "f297a104ccf37929d824615de940e32855ce397b712ba6939b2e19baedf7ba82"
 lock-version = "1.0"
 python-versions = "^3.6.1"
 
@@ -1840,8 +1840,8 @@ restructuredtext-lint = [
     {file = "restructuredtext_lint-1.3.1.tar.gz", hash = "sha256:470e53b64817211a42805c3a104d2216f6f5834b22fe7adb637d1de4d6501fb8"},
 ]
 rich = [
-    {file = "rich-6.0.0-py3-none-any.whl", hash = "sha256:75bb80a52a550424a9f36bfdc57dc2977a2b8d0a1eb3b011df258c017d8ba322"},
-    {file = "rich-6.0.0.tar.gz", hash = "sha256:53c683a79e3f949d675b1d04e6fe3ccd53fad97aa7e2f6a83f2985502663f420"},
+    {file = "rich-7.0.0-py3-none-any.whl", hash = "sha256:941c679ea681f0915eb986e48c38fa74f661f31bf815a3be696b27588469faf3"},
+    {file = "rich-7.0.0.tar.gz", hash = "sha256:291700f5c09fae83676f44781d01a292c39efad9505dd4724899646b794f9afb"},
 ]
 rope = [
     {file = "rope-0.17.0.tar.gz", hash = "sha256:658ad6705f43dcf3d6df379da9486529cf30e02d9ea14c5682aa80eb33b649e1"},

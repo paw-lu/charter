@@ -374,7 +374,6 @@ class XAxis(Ticks):
         """
         xaxis_columns = [
             rich.table.Column(
-                column_number + 1,
                 header="xtick",
                 width=2 * tick_margin + 1,
                 no_wrap=True,
@@ -382,23 +381,20 @@ class XAxis(Ticks):
             )
             if column_number % 2 == 0
             else rich.table.Column(
-                column_number, header="xtick_margin", width=tick_margin, no_wrap=True,
+                header="xtick_margin", width=tick_margin, no_wrap=True,
             )
             for column_number in range(2 * number_of_ticks - 1)
         ]
         xaxis_columns = (
             [
                 rich.table.Column(
-                    0, header="left_padding", width=left_padding, no_wrap=True,
+                    header="left_padding", width=left_padding, no_wrap=True,
                 )
             ]
             + xaxis_columns
             + [
                 rich.table.Column(
-                    len(xaxis_columns) + 1,
-                    header="right_padding",
-                    width=right_padding,
-                    no_wrap=True,
+                    header="right_padding", width=right_padding, no_wrap=True,
                 )
             ]
         )
