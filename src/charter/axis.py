@@ -48,6 +48,8 @@ class Ticks:
 
     def __post_init__(self) -> None:
         """Constructor."""
+        if self.max_data < self.min_data:
+            raise ValueError("min_data must be less than or equal to max_data")
         self.max_ticks = max(self.max_ticks, 2)
         self.tick_values = self.tick_values or _get_tick_values(
             min_data=self.min_data, max_data=self.max_data, max_ticks=self.max_ticks
@@ -317,6 +319,12 @@ class XAxis(Ticks):
         tick_labels: Optional[List[str]] = None,
     ) -> None:
         """Constructor."""
+        if any(
+            measurement < 0 for measurement in (tick_padding, min_tick_margin, width)
+        ):
+            raise ValueError(
+                "tick_padding, min_tick_margin, and width must be 0 or greater"
+            )
         self.width = width
         max_ticks = 1 + (
             (self.width - (2 * tick_padding + 1))

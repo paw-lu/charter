@@ -278,6 +278,15 @@ def test_no_room() -> None:
     assert actual_tick_positions == range(3, 11, 7)
 
 
-# Hypothesis
-# Check that width is always completely taken up!
-# Check that number of ticks is always less than or equal to max
+def test_min_larger_max() -> None:
+    """It raises a ValueError is min_data is larger than max_data."""
+    with pytest.raises(ValueError):
+        axis.XAxis(min_data=10, max_data=4, tick_padding=3, min_tick_margin=1, width=10)
+
+
+def test_negative_measurements() -> None:
+    """It raises a ValueError if measurements are negative."""
+    with pytest.raises(ValueError):
+        axis.XAxis(
+            min_data=10, max_data=4, tick_padding=3, min_tick_margin=1, width=-10
+        )
