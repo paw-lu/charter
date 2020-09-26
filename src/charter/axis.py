@@ -73,7 +73,7 @@ class Ticks:
             None
             if self.axis_subtractor == 0
             else (
-                f"{self.axis_subtractor / self.axis_power:0.2f}"
+                f"{self.axis_subtractor / (10 ** self.axis_power):0.2f}"
                 f"{_get_metric_prefix(self.axis_power)}"
             )
         )
@@ -89,7 +89,11 @@ def _find_closest_prefix_power(number: float) -> int:
     Returns:
         int: The closest SI prefix power.
     """
-    return max(min(math.floor(math.log10(abs(number))) // 3 * 3, 24), -24)
+    return (
+        max(min(math.floor(math.log10(abs(number))) // 3 * 3, 24), -24)
+        if number != 0
+        else 0
+    )
 
 
 def _get_axis_label_adjustors(tick_values: List[float]) -> Tuple[float, int]:
@@ -340,7 +344,11 @@ class XAxis(Ticks):
         self.tick_padding = tick_padding
         self.number_of_xticks = len(self.tick_values) if self.tick_values else 0
         total_tick_space = self.number_of_xticks * (self.tick_padding * 2 + 1)
-        tick_margin = (self.width - total_tick_space) // (self.number_of_xticks - 1)
+        tick_margin = (
+            (self.width - total_tick_space) // (self.number_of_xticks - 1)
+            if 1 < self.number_of_xticks
+            else 0
+        )
         self.tick_margin = max(tick_margin, 0)
         total_taken_space = total_tick_space + (
             self.tick_margin * (self.number_of_xticks - 1)
