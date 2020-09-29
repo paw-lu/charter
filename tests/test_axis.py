@@ -163,6 +163,7 @@ def test__make_tick_labels(
         ([5_000_003], 0, 6),
         ([5_561_943 + axis_tick for axis_tick in range(6)], 5561940, 0),
         ([-1e6 + 1, -1e6 + 2, -1e6 + 3], -1e6, 0),
+        ([step / 100 for step in range(0, 101)], 0, 0),
     ],
 )
 def test__get_axis_label_adjustors(
@@ -290,3 +291,11 @@ def test_negative_measurements() -> None:
         axis.XAxis(
             min_data=10, max_data=4, tick_padding=3, min_tick_margin=1, width=-10
         )
+
+
+def test_no_axis_subtractor() -> None:
+    """It returns no label if there is nothing to subtract."""
+    xaxis = axis.XAxis(
+        min_data=0, max_data=1, tick_padding=0, min_tick_margin=0, width=101
+    )
+    assert xaxis.axis_subtractor_label is None

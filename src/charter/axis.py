@@ -96,6 +96,43 @@ def _find_closest_prefix_power(number: float) -> int:
     )
 
 
+def _get_min_step_size(tick_values: List[float]) -> float:
+    """Get the minimum step size given a list of tick vales.
+
+    Tick values must be in ascending order.
+
+    Args:
+        tick_values (List[float]): The tick values in ascending order.
+
+    Raises:
+        ValueError: If ``tick_values`` are not found to be in ascending
+            order.
+
+    Returns:
+        float
+    """
+    left_tick, right_tick = min(
+        zip(tick_values[:-1], tick_values[1:]),
+        key=lambda tick_pair: tick_pair[1] - tick_pair[0],
+    )
+    min_tick_step = right_tick - left_tick
+    if min_tick_step < 0:
+        raise ValueError(
+            "Ticks must be in ascending order."
+            f" {left_tick} is greater than {right_tick}"
+        )
+    # Round off in case of floating point errors
+    elif min_tick_step != 0:
+        min_tick_step_place = math.floor(math.log10(min_tick_step))
+        next_place_up = 10 ** (min_tick_step_place + 1)
+        next_place_down = 10 ** (min_tick_step_place - 1)
+        if ((next_place_up - min_tick_step) / min_tick_step) < 0.001:
+            min_tick_step = next_place_up
+        elif ((min_tick_step - next_place_down) / min_tick_step) < 0.001:
+            min_tick_step = next_place_down
+    return min_tick_step
+
+
 def _get_axis_label_adjustors(tick_values: List[float]) -> Tuple[float, int]:
     """Return the tick divisor power and axis subtractor.
 
@@ -122,9 +159,7 @@ def _get_axis_label_adjustors(tick_values: List[float]) -> Tuple[float, int]:
         tick_divisor_power = axis_divisor_power
         axis_subtractor = 0
     else:
-        min_step_size = min(
-            next_tick - tick for next_tick, tick in zip(tick_values[1:], tick_values)
-        )
+        min_step_size = _get_min_step_size(tick_values)
         if min_step_size < 0:
             raise ValueError(
                 f"A step was found to be {min_step_size}."
