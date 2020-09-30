@@ -5,6 +5,7 @@ __pycache__/
 .virtual_documents/
 /.coverage
 /.coverage.*
+/.hypothesis/
 /.nox/
 /.python-version
 /.pytype/
