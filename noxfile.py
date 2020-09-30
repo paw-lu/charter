@@ -222,10 +222,11 @@ def mypy(session: Session) -> None:
 @nox.session(python=python_versions)
 def tests(session: Session) -> None:
     """Run the test suite."""
+    args = session.posargs or ["-m", "not hypothesis"]
     install_package(session)
-    install(session, "coverage[toml]", "pytest")
+    install(session, "coverage[toml]", "pytest", "hypothesis")
     try:
-        session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
+        session.run("coverage", "run", "--parallel", "-m", "pytest", *args)
     finally:
         session.notify("coverage")
 

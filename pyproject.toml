@@ -50,6 +50,7 @@ ipdb = "^0.13.3"
 ipykernel = "^5.3.4"
 pygments = "^2.6.1"
 rope = "^0.17.0"
+hypothesis = "^5.35.4"
 
 [tool.poetry.scripts]
 charter = "charter.__main__:main"

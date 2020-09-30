@@ -3,6 +3,8 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
+import hypothesis
+import hypothesis.strategies as st
 import pytest
 import rich.text
 
@@ -299,3 +301,27 @@ def test_no_axis_subtractor() -> None:
         min_data=0, max_data=1, tick_padding=0, min_tick_margin=0, width=101
     )
     assert xaxis.axis_subtractor_label is None
+
+
+@hypothesis.given(
+    min_data=st.integers(),
+    max_data=st.integers(),
+    tick_padding=st.integers(min_value=0),
+    min_tick_margin=st.integers(min_value=0),
+    width=st.integers(min_value=0, max_value=9_999_999),
+)
+@hypothesis.settings(deadline=500)
+@hypothesis.example(min_data=0, max_data=0, tick_padding=0, min_tick_margin=0, width=0)
+def test_hypothesis(
+    min_data: int, max_data: int, tick_padding: int, min_tick_margin: int, width: int
+) -> None:
+    """It creates at at least one tick given any valid data."""
+    hypothesis.assume(min_data <= max_data)
+    xaxis = axis.XAxis(
+        min_data=min_data,
+        max_data=max_data,
+        tick_padding=tick_padding,
+        min_tick_margin=min_tick_margin,
+        width=width,
+    )
+    assert 1 <= xaxis.number_of_xticks
