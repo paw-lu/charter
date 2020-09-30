@@ -281,7 +281,7 @@ def test_no_room() -> None:
     assert actual_tick_positions == range(3, 11, 7)
 
 
-def test_min_larger_max() -> None:
+def test_min_larger_max_xaxis() -> None:
     """It raises a ValueError is min_data is larger than max_data."""
     with pytest.raises(ValueError):
         axis.XAxis(min_data=10, max_data=4, tick_padding=3, min_tick_margin=1, width=10)
@@ -301,6 +301,12 @@ def test_no_axis_subtractor() -> None:
         min_data=0, max_data=1, tick_padding=0, min_tick_margin=0, width=101
     )
     assert xaxis.axis_subtractor_label is None
+
+
+def test_min_step_zero() -> None:
+    """It returns a min step size of 0 when two ticks are equal."""
+    actual_min_step_size = axis._get_min_step_size([10, 10])
+    assert actual_min_step_size == 0
 
 
 @hypothesis.given(
