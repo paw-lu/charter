@@ -316,7 +316,7 @@ def test_min_step_zero() -> None:
     min_tick_margin=st.integers(min_value=0),
     width=st.integers(min_value=0, max_value=9_999_999),
 )
-@hypothesis.settings(deadline=500)
+@hypothesis.settings(deadline=500)  # type: ignore
 @hypothesis.example(min_data=0, max_data=0, tick_padding=0, min_tick_margin=0, width=0)
 def test_hypothesis(
     min_data: int, max_data: int, tick_padding: int, min_tick_margin: int, width: int
