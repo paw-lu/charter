@@ -290,7 +290,13 @@ def test_min_step_zero() -> None:
 def test_raise_exception_zero_max_tick() -> None:
     """It raises a ValueError is the max_tick it too low."""
     with pytest.raises(ValueError):
-        axis.XAxis(min_data=10, max_data=4, tick_padding=3, min_tick_margin=1, width=0)
+        axis.Ticks(min_data=4, max_data=10, max_ticks=0)
+
+
+def test_max_ticks_one() -> None:
+    """It returns the midpoint as a tick value if max_ticks is 1."""
+    ticks = axis.Ticks(min_data=0, max_data=10, max_ticks=1)
+    assert ticks.tick_values == [5]
 
 
 @hypothesis.given(
