@@ -402,6 +402,7 @@ class XAxis(Ticks):
         )
         self.table_columns = self._make_xaxis_columns(
             number_of_ticks=self.number_of_xticks,
+            tick_padding=self.tick_padding,
             left_padding=self.left_padding,
             right_padding=self.right_padding,
             tick_margin=self.tick_margin,
@@ -410,6 +411,7 @@ class XAxis(Ticks):
     def _make_xaxis_columns(
         self,
         number_of_ticks: int,
+        tick_padding: int,
         left_padding: int,
         right_padding: int,
         tick_margin: int,
@@ -418,6 +420,7 @@ class XAxis(Ticks):
 
         Args:
             number_of_ticks (int): The number of ticks in the axis.
+            tick_padding (int): The padding for the tick.
             left_padding (int): The padding on the left for the x axis.
             right_padding (int): The padding on the right for the x
                 axis.
@@ -430,7 +433,7 @@ class XAxis(Ticks):
         xaxis_columns = [
             rich.table.Column(
                 header="xtick",
-                width=2 * tick_margin + 1,
+                width=2 * tick_padding + 1,
                 no_wrap=True,
                 justify="center",
             )
