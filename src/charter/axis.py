@@ -244,7 +244,7 @@ def _round_number(
             the number falls below or equal to the associated
             rounding points.
         allow_equal (bool): Whether to allow the number to be equal
-            to the rounding points. If set False
+            to the rounding points.
 
     Returns:
         float: The number in a rounded form.
