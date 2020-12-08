@@ -288,19 +288,20 @@ def test_min_step_zero() -> None:
 
 
 @hypothesis.given(
-    min_data=st.integers(),
-    max_data=st.integers(),
+    min_data=st.integers(min_value=-999_999, max_value=999_999),
+    max_data=st.integers(min_value=-999_999, max_value=999_999),
     tick_padding=st.integers(min_value=0),
     min_tick_margin=st.integers(min_value=0),
-    width=st.integers(min_value=0, max_value=9_999_999),
+    width=st.integers(min_value=0, max_value=999_999),
 )
-@hypothesis.settings(deadline=500)  # type: ignore
+@hypothesis.settings(deadline=1_000)  # type: ignore[misc]
 @hypothesis.example(min_data=0, max_data=0, tick_padding=0, min_tick_margin=0, width=0)
-def test_hypothesis(
+def test_tick_creation_hypothesis(
     min_data: int, max_data: int, tick_padding: int, min_tick_margin: int, width: int
 ) -> None:
     """It creates at at least one tick given any valid data."""
     hypothesis.assume(min_data <= max_data)
+    hypothesis.assume((2 * tick_padding) < width)
     xaxis = axis.XAxis(
         min_data=min_data,
         max_data=max_data,
