@@ -287,6 +287,12 @@ def test_min_step_zero() -> None:
     assert actual_min_step_size == 0
 
 
+def test_raise_exception_zero_max_tick() -> None:
+    """It raises a ValueError is the max_tick it too low."""
+    with pytest.raises(ValueError):
+        axis.XAxis(min_data=10, max_data=4, tick_padding=3, min_tick_margin=1, width=0)
+
+
 @hypothesis.given(
     min_data=st.integers(min_value=-999_999, max_value=999_999),
     max_data=st.integers(min_value=-999_999, max_value=999_999),
