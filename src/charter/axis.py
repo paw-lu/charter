@@ -283,7 +283,7 @@ def _get_tick_values(min_data: float, max_data: float, max_ticks: int) -> List[f
         return [min_data]
     if max_ticks == 1:
         return [(min_data + max_data) / 2]
-    if max_ticks == 0:
+    if max_ticks <= 0:
         raise ValueError("max_ticks must be greater than 0")
     else:
         data_range = max_data - min_data

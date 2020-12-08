@@ -299,6 +299,12 @@ def test_max_ticks_one() -> None:
     assert ticks.tick_values == [5]
 
 
+def test_raise_exception_zero_max_tick_value() -> None:
+    """It raises a ValueError is the max_tick is too low."""
+    with pytest.raises(ValueError):
+        axis._get_tick_values(min_data=0, max_data=10, max_ticks=0)
+
+
 @hypothesis.given(
     min_data=st.integers(min_value=-999_999, max_value=999_999),
     max_data=st.integers(min_value=-999_999, max_value=999_999),
