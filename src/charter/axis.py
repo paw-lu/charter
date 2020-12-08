@@ -297,6 +297,10 @@ def _get_tick_values(min_data: float, max_data: float, max_ticks: int) -> List[f
         first_tick = math.floor(min_data / tick_spacing) * tick_spacing
         last_tick = math.ceil(max_data / tick_spacing) * tick_spacing
         number_of_ticks: int = math.ceil((last_tick - first_tick) / tick_spacing) + 1
+        if max_ticks < number_of_ticks:
+            first_tick = min_data
+            number_of_ticks = max_ticks
+            tick_spacing = data_range / (max_ticks - 1)
         return [
             first_tick + factor * tick_spacing for factor in range(0, number_of_ticks)
         ]
