@@ -259,28 +259,6 @@ def test_xtick_labels() -> None:
     assert actual_xtick_lables == expected_xtick_labels
 
 
-def test_tight_space() -> None:
-    """It will return a minimum of two ticks."""
-    ticks = axis.Ticks(min_data=0, max_data=10, max_ticks=1)
-    expected_number_of_ticks = ticks.tick_values
-    assert len(expected_number_of_ticks if expected_number_of_ticks else []) == 2
-
-
-def test_no_room() -> None:
-    """It creates a minimum of two ticks when there is not enough space."""
-    xaxis = axis.XAxis(
-        min_data=0,
-        max_data=10,
-        tick_padding=3,
-        min_tick_margin=1,
-        width=10,
-        tick_values=None,
-        tick_labels=None,
-    )
-    actual_tick_positions = xaxis.tick_positions
-    assert actual_tick_positions == range(3, 11, 7)
-
-
 def test_min_larger_max_xaxis() -> None:
     """It raises a ValueError is min_data is larger than max_data."""
     with pytest.raises(ValueError):
