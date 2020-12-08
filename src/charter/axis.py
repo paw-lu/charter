@@ -272,11 +272,18 @@ def _get_tick_values(min_data: float, max_data: float, max_ticks: int) -> List[f
             dimension.
         max_ticks (int): The maximum number of ticks.
 
+    Raises:
+        ValueError: If ``max_ticks`` is less than 1.
+
     Returns:
         List[float]: The tick positions in ascending order.
     """
     if max_data == min_data:
         return [min_data]
+    if max_ticks == 1:
+        return [(min_data + max_data) / 2]
+    if max_ticks == 0:
+        raise ValueError("max_ticks must be greater than 0")
     else:
         data_range = max_data - min_data
         rounded_range = _round_number(
