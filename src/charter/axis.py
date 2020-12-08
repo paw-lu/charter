@@ -50,7 +50,8 @@ class Ticks:
         """Constructor."""
         if self.max_data < self.min_data:
             raise ValueError("min_data must be less than or equal to max_data")
-        self.max_ticks = max(self.max_ticks, 2)
+        if self.max_ticks < 1:
+            raise ValueError("max_ticks must be 1 or greater")
         self.tick_values = self.tick_values or _get_tick_values(
             min_data=self.min_data, max_data=self.max_data, max_ticks=self.max_ticks
         )
