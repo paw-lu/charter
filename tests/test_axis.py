@@ -305,6 +305,22 @@ def test_raise_exception_zero_max_tick_value() -> None:
         axis._get_tick_values(min_data=0, max_data=10, max_ticks=0)
 
 
+def test_raises_padding_too_big() -> None:
+    """It raises a ValueError when the tick padding is too large."""
+    with pytest.raises(ValueError):
+        axis.XAxis(
+            min_data=0, max_data=10, tick_padding=3e3, min_tick_margin=2, width=4
+        )
+
+
+def test_fallback_ticks() -> None:
+    """It will fallback to a simple algorithm when the range is low."""
+    xaxis = axis.XAxis(
+        min_data=0, max_data=6, tick_padding=0, min_tick_margin=0, width=2
+    )
+    assert xaxis.tick_values == [0.0, 6.0]
+
+
 @hypothesis.given(
     min_data=st.integers(min_value=-999_999, max_value=999_999),
     max_data=st.integers(min_value=-999_999, max_value=999_999),
