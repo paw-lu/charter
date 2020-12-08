@@ -352,6 +352,10 @@ class XAxis(Ticks):
             raise ValueError(
                 "tick_padding, min_tick_margin, and width must be 0 or greater"
             )
+        if width < (2 * tick_padding) + 1:
+            raise ValueError(
+                "tick_padding is too large and will not fit in allocated width."
+            )
         self.width = width
         max_ticks = 1 + (
             (self.width - (2 * tick_padding + 1))
