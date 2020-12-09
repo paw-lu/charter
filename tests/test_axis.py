@@ -309,7 +309,7 @@ def test_raises_padding_too_big() -> None:
     """It raises a ValueError when the tick padding is too large."""
     with pytest.raises(ValueError):
         axis.XAxis(
-            min_data=0, max_data=10, tick_padding=3e3, min_tick_margin=2, width=4
+            min_data=0, max_data=10, tick_padding=3_000, min_tick_margin=2, width=4
         )
 
 
