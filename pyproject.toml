@@ -23,7 +23,7 @@ python = "^3.6.1"
 typer = "^0.3.2"
 colorama = "^0.4.3"
 tomlkit = "^0.7.0"
-rich = "^9.0.1"
+rich = "^9.3.0"
 dataclasses = {version = "^0.7", python = "3.6"}
 
 [tool.poetry.dev-dependencies]
