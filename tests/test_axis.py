@@ -30,22 +30,14 @@ def test_console_render() -> None:
     )
 
 
-# def test__rich_console__() -> None:
-#     """It renders the xaxis."""
-#     width = 20
-#     xaxis = axis.XAxis(
-#         min_data=15, max_data=150, tick_padding=3, min_tick_margin=2, width=width
-#     )
-#     console = rich.console.Console()
-#     options = rich.console.ConsoleOptions(
-#         legacy_windows=False,
-#         min_width=1,
-#         max_width=width,
-#         is_terminal=True,
-#         encoding="uft-8",
-#     )
-#     xaxis = next(xaxis.__rich_console__(console=console, options=options))
-#     assert xaxis.width == width
+def test_rich_measure() -> None:
+    """It's min width measures the axis' width."""
+    width = 80
+    xaxis = axis.XAxis(
+        min_data=15, max_data=150, tick_padding=3, min_tick_margin=2, width=width
+    )
+    console = rich.console.Console()
+    assert xaxis.__rich_measure__(console=console, max_width=100).minimum == width
 
 
 def test_tick_labels() -> None:
