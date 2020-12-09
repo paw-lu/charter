@@ -8,8 +8,13 @@ from typing import Optional
 from typing import Tuple
 
 import rich.columns
+import rich.measure
 import rich.table
 import rich.text
+from rich.console import Console
+from rich.console import ConsoleOptions
+from rich.console import RenderResult
+from rich.measure import Measurement
 from rich.table import Column
 from rich.text import Text
 
@@ -345,6 +350,9 @@ class XAxis(Ticks):
         axis_subtractor_label (str): The axis subtractor label.
         table_columns (List[Column]): The columns that compose the x
             axis.
+        characters (Dict[str, str]): The characters to use in creating
+            the xline. Gets values from "xline", "xtick", and
+            "xtick_spacing" keys.
     """
 
     def __init__(
@@ -356,6 +364,7 @@ class XAxis(Ticks):
         width: int,
         tick_values: Optional[List[float]] = None,
         tick_labels: Optional[List[str]] = None,
+        characters: Optional[Dict[str, str]] = None,
     ) -> None:
         """Constructor."""
         if any(
@@ -369,6 +378,7 @@ class XAxis(Ticks):
                 "tick_padding is too large and will not fit in allocated width."
             )
         self.width = width
+        self.characters = characters or {}
         max_ticks = 1 + (
             (self.width - (2 * tick_padding + 1))
             // ((2 * tick_padding + 1) + min_tick_margin)
@@ -407,6 +417,30 @@ class XAxis(Ticks):
             right_padding=self.right_padding,
             tick_margin=self.tick_margin,
         )
+
+    def __rich_console__(
+        self, console: Console, options: ConsoleOptions
+    ) -> RenderResult:
+        """Console protocol for Rich."""
+        xaxis_grid = rich.table.Table(
+            *self.table_columns,
+            width=self.width,
+            box=None,
+            collapse_padding=True,
+            pad_edge=False,
+            show_edge=False,
+            show_footer=False,
+            show_lines=False,
+            show_header=False,
+            padding=(0, 0),
+        )
+        xaxis_grid.add_row(*self.xline(self.characters, show_ticks=True))
+        xaxis_grid.add_row(*self.xtick_labels(self.characters))
+        yield xaxis_grid
+
+    def __rich_measure__(self, console: Console, max_width: int) -> Measurement:
+        """The width of the renderable."""
+        return rich.measure.Measurement(minimum=self.width, maximum=max_width)
 
     def _make_xaxis_columns(
         self,

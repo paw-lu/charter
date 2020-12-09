@@ -1,4 +1,5 @@
 """Test the number line generator."""
+import io
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -6,9 +7,45 @@ from typing import Tuple
 import hypothesis
 import hypothesis.strategies as st
 import pytest
+import rich.console
 import rich.text
 
 from charter import axis
+
+
+def test_console_render() -> None:
+    """It renders an xaxis."""
+    width = 80
+    console = rich.console.Console(file=io.StringIO(), width=width)
+    console.print(
+        axis.XAxis(
+            min_data=15, max_data=150, tick_padding=3, min_tick_margin=2, width=width
+        )
+    )
+    output = console.file.getvalue()
+    assert output == (
+        " ━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━━┳━━━"
+        "━━━━━┳━━━━━━━━┳━━━\n  0.00     20.00    40.00    60.00"
+        "    80.00   100.00   120.00   140.00   160.00 \n"
+    )
+
+
+# def test__rich_console__() -> None:
+#     """It renders the xaxis."""
+#     width = 20
+#     xaxis = axis.XAxis(
+#         min_data=15, max_data=150, tick_padding=3, min_tick_margin=2, width=width
+#     )
+#     console = rich.console.Console()
+#     options = rich.console.ConsoleOptions(
+#         legacy_windows=False,
+#         min_width=1,
+#         max_width=width,
+#         is_terminal=True,
+#         encoding="uft-8",
+#     )
+#     xaxis = next(xaxis.__rich_console__(console=console, options=options))
+#     assert xaxis.width == width
 
 
 def test_tick_labels() -> None:
