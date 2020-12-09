@@ -125,6 +125,7 @@ def tests(session: Session) -> None:
         session.run("coverage", "run", "--parallel", "-m", "pytest", *args)
     finally:
         if session.interactive:
+            session.run("coverage", "html")
             session.notify("coverage")
 
 
