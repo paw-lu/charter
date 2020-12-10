@@ -22,7 +22,7 @@ def test_console_render() -> None:
             min_data=15, max_data=150, tick_padding=3, min_tick_margin=2, width=width
         )
     )
-    output = console.file.getvalue()
+    output = console.file.getvalue()  # type: ignore[attr-defined]
     assert output == (
         " ━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━━┳━━━━━━━━┳━━━"
         "━━━━━┳━━━━━━━━┳━━━\n  0.00     20.00    40.00    60.00"
