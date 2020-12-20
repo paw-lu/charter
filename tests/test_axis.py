@@ -231,8 +231,10 @@ def test_xline(characters: Dict[str, str], show_ticks: bool) -> None:
         width=24,
         tick_values=None,
         tick_labels=None,
+        characters=characters,
+        show_ticks=show_ticks,
     )
-    actual_xline = xaxis.xline(characters, show_ticks=show_ticks)
+    actual_xline = xaxis.xline()
     tick_padding = rich.text.Text(
         characters["xline"] * 3, style="xaxis", overflow="crop"
     )
@@ -268,8 +270,9 @@ def test_xtick_labels() -> None:
         width=24,
         tick_values=None,
         tick_labels=None,
+        characters={"xtick_spacing": "_"},
     )
-    actual_xtick_lables = xaxis.xtick_labels({"xtick_spacing": "_"})
+    actual_xtick_lables = xaxis.xtick_labels()
     expected_xtick_labels = [
         rich.text.Text("", style="xtick_spacing", overflow="crop"),
         rich.text.Text(

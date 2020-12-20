@@ -320,12 +320,17 @@ class XAxis(Ticks):
         max_data (float): The maximum value of the data for the axis
             dimension.
         tick_padding (int): The width a tick and its label takes up.
-        tick_margin (int): The minimum spacing between ticks.
+        min_tick_margin (int): The minimum spacing between ticks.
         width (int): The width of the axis in characters.
         tick_values (List[float], optional): The values for the ticks.
             By default will be automatically calculated.
-        tick_labels (List[float], optional): The labels for the ticks.
+        tick_labels (List[str], optional): The labels for the ticks.
             By default will be automatically calculated.
+        characters (Dict[str, str]): The characters to use in creating
+            the xline. Gets values from "xline", "xtick", and
+            "xtick_spacing" keys.
+        show_ticks (bool): Whether to show ticks on the xaxis. By
+            default True.
 
     Attributes:
         width (int): The width of the x axis.
@@ -336,7 +341,7 @@ class XAxis(Ticks):
             tick padding.
         left_padding (int): The spacing on the left of the x axis.
         right_padding (int): The spacing on the right of the x axis.
-        tick_positions (Generator[int, None, None]): The locations of
+        tick_positions (List[int]): The locations of
             the actual ticks on the x line.
         tick_values (List[float]): The values of the ticks in ascending
             order.
@@ -353,6 +358,7 @@ class XAxis(Ticks):
         characters (Dict[str, str]): The characters to use in creating
             the xline. Gets values from "xline", "xtick", and
             "xtick_spacing" keys.
+        show_ticks (bool): Whether xticks are shown on the xaxis.
     """
 
     def __init__(
@@ -365,6 +371,7 @@ class XAxis(Ticks):
         tick_values: Optional[List[float]] = None,
         tick_labels: Optional[List[str]] = None,
         characters: Optional[Dict[str, str]] = None,
+        show_ticks: bool = True,
     ) -> None:
         """Constructor."""
         if any(
@@ -379,6 +386,7 @@ class XAxis(Ticks):
             )
         self.width = width
         self.characters = characters or {}
+        self.show_ticks = show_ticks
         max_ticks = 1 + (
             (self.width - (2 * tick_padding + 1))
             // ((2 * tick_padding + 1) + min_tick_margin)
@@ -405,10 +413,12 @@ class XAxis(Ticks):
         extra_space = max(self.width - total_taken_space, 0)
         self.left_padding = extra_space // 2
         self.right_padding = max(extra_space - self.left_padding, 0)
-        self.tick_positions = range(
-            self.tick_padding + self.left_padding,
-            self.width + 1,
-            self.tick_margin + 2 * self.tick_padding + 1,
+        self.tick_positions = list(
+            range(
+                self.tick_padding + self.left_padding,
+                self.width + 1,
+                self.tick_margin + 2 * self.tick_padding + 1,
+            )
         )
         self.table_columns = self._make_xaxis_columns(
             number_of_ticks=self.number_of_xticks,
@@ -434,8 +444,8 @@ class XAxis(Ticks):
             show_header=False,
             padding=(0, 0),
         )
-        xaxis_grid.add_row(*self.xline(self.characters, show_ticks=True))
-        xaxis_grid.add_row(*self.xtick_labels(self.characters))
+        xaxis_grid.add_row(*self.xline())
+        xaxis_grid.add_row(*self.xtick_labels())
         yield xaxis_grid
 
     def __rich_measure__(self, console: Console, max_width: int) -> Measurement:
@@ -492,22 +502,15 @@ class XAxis(Ticks):
         )
         return xaxis_columns
 
-    def xline(self, characters: Dict[str, str], show_ticks: bool = True) -> List[Text]:
+    def xline(self) -> List[Text]:
         """Create the xline.
-
-        Args:
-            characters (Dict[str, str]): The characters to use in
-                creating the xline. Gets values from "xline" and "xtick"
-                keys.
-            show_ticks (bool): Whether to show ticks on the xline.
-                Defaults to True.
 
         Returns:
             Text: The xline row of the chart.
         """
-        xline_character = characters.get("xline", "━")
+        xline_character = self.characters.get("xline", "━")
         xtick_character = (
-            characters.get("xtick", "┳") if show_ticks else xline_character
+            self.characters.get("xtick", "┳") if self.show_ticks else xline_character
         )
         xline = []
         for column in self.table_columns:
@@ -555,18 +558,13 @@ class XAxis(Ticks):
                 )
         return xline
 
-    def xtick_labels(self, characters: Dict[str, str]) -> List[Text]:
+    def xtick_labels(self) -> List[Text]:
         """Create the xlabels.
-
-        Args:
-            characters (Dict[str, str]): The characters to use in
-                creating the xline. Gets values from "xtick_spacing"
-                keys.
 
         Returns:
             Text: The xlabel row of the chart.
         """
-        xtick_spacing_character = characters.get("xtick_spacing", " ")
+        xtick_spacing_character = self.characters.get("xtick_spacing", " ")
         xtick_labels = []
         tick_labels = self.tick_labels.copy() if self.tick_labels else []
         for column in self.table_columns:
