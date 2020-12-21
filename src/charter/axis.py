@@ -6,6 +6,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import rich.columns
 import rich.measure
@@ -715,3 +716,44 @@ class YAxis(Ticks):
             else [ytick_column, label_column]
         )
         return yaxis_columns
+
+    def ytick_labels(self) -> List[Text]:
+        """Create the ylabels.
+
+        Returns:
+            List[Text]: The y tick labels from top to bottom.
+        """
+        ytick_spacing_character = self.characters.get("ytick_spacing", " ")
+        label_width = self.width - 1
+        ytick_labels = self.top_padding * [
+            rich.text.Text(
+                ytick_spacing_character, style="ytick_spacing", overflow="crop"
+            )
+        ]
+        tick_labels = self.tick_labels.copy() if self.tick_labels else []
+        leftover: Union[None, str] = None
+        tick_positions = set(self.tick_positions)
+        for row in range(self.top_padding, self.length - self.bottom_padding):
+            if row in tick_positions or leftover:
+                full_label = leftover or tick_labels.pop(-1)
+                if label_width < len(full_label) and (row + 1) not in tick_positions:
+                    label = full_label[:label_width]
+                    leftover = full_label[label_width:]
+                else:
+                    label = full_label
+                    leftover = None
+                ytick_labels.append(
+                    rich.text.Text(label, style="ytick_label", overflow="ellipsis")
+                )
+            else:
+                ytick_labels.append(
+                    rich.text.Text(
+                        ytick_spacing_character, style="ytick_spacing", overflow="crop"
+                    )
+                )
+        ytick_labels += self.bottom_padding * [
+            rich.text.Text(
+                ytick_spacing_character, style="ytick_spacing", overflow="crop"
+            )
+        ]
+        return ytick_labels

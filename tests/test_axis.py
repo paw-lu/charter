@@ -466,3 +466,35 @@ def test_columns_reorient(position: Literal["left", "right"]) -> None:
         else [ytick_column, label_column]
     )
     assert yaxis.table_columns == expected_columns
+
+
+def test_ytick_labels() -> None:
+    """It creates y labels."""
+    yaxis = axis.YAxis(
+        min_data=0, max_data=5, min_tick_margin=2, length=5, width=10, position="left",
+    )
+    expected_ytick_labels = (
+        [rich.text.Text("5.00", style="ytick_label", overflow="ellipsis")]
+        + 3 * [rich.text.Text(" ", style="ytick_spacing", overflow="crop")]
+        + [rich.text.Text("0.00", style="ytick_label", overflow="ellipsis")]
+    )
+    assert yaxis.ytick_labels() == expected_ytick_labels
+
+
+def test_ytick_labels_characters() -> None:
+    """It uses the provided characters when drawing the y labels."""
+    yaxis = axis.YAxis(
+        min_data=0,
+        max_data=5,
+        min_tick_margin=2,
+        length=5,
+        width=10,
+        position="left",
+        characters={"ytick_spacing": "q"},
+    )
+    expected_ytick_labels = (
+        [rich.text.Text("5.00", style="ytick_label", overflow="ellipsis")]
+        + 3 * [rich.text.Text("q", style="ytick_spacing", overflow="crop")]
+        + [rich.text.Text("0.00", style="ytick_label", overflow="ellipsis")]
+    )
+    assert yaxis.ytick_labels() == expected_ytick_labels
