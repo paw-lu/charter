@@ -696,3 +696,22 @@ class YAxis(Ticks):
             range(self.top_padding, self.length + 1, self.tick_margin + 1)
         )
         self.table_columns = self._make_yaxis_columns()
+
+    def _make_yaxis_columns(self) -> List[Column]:
+        """Create the columns that compose the y axis."""
+        ytick_column = rich.table.Column(
+            header="ytick", width=1, no_wrap=True, justify="left", overflow="crop",
+        )
+        label_column = rich.table.Column(
+            header="ytick_label",
+            width=self.width - 1,
+            no_wrap=True,
+            justify="left",
+            overflow="ellipsis",
+        )
+        yaxis_columns = (
+            [label_column, ytick_column]
+            if self.position == "left"
+            else [ytick_column, label_column]
+        )
+        return yaxis_columns

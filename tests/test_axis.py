@@ -8,7 +8,9 @@ import hypothesis
 import hypothesis.strategies as st
 import pytest
 import rich.console
+import rich.table
 import rich.text
+from typing_extensions import Literal
 
 from charter import axis
 
@@ -434,3 +436,33 @@ def test_raises_value_error_on_bad_position() -> None:
             width=10,
             position="bad value",  # type: ignore[arg-type]
         )
+
+
+@pytest.mark.parametrize("position", ["left", "right"])
+def test_columns_reorient(position: Literal["left", "right"]) -> None:
+    """It reorients its columns based on the position argument."""
+    width = 10
+    yaxis = axis.YAxis(
+        min_data=0,
+        max_data=10,
+        min_tick_margin=2,
+        length=50,
+        width=10,
+        position=position,
+    )
+    ytick_column = rich.table.Column(
+        header="ytick", width=1, no_wrap=True, justify="left", overflow="crop",
+    )
+    label_column = rich.table.Column(
+        header="ytick_label",
+        width=width - 1,
+        no_wrap=True,
+        justify="left",
+        overflow="ellipsis",
+    )
+    expected_columns = (
+        [label_column, ytick_column]
+        if position == "left"
+        else [ytick_column, label_column]
+    )
+    assert yaxis.table_columns == expected_columns
