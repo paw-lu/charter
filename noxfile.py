@@ -140,7 +140,11 @@ def coverage(session: Session) -> None:
     if not has_args and any(Path().glob(".coverage.*")):
         session.run("coverage", "combine")
 
-    session.run("coverage", *args)
+    try:
+        session.run("coverage", *args)
+    finally:
+        if session.interactive:
+            session.run("coverage", "html")
 
 
 @nox.session(python=python_versions)
