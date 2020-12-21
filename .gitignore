@@ -14,4 +14,4 @@ __pycache__/
 /docs/_build/
 /htmlcov
 /src/*.egg-info/
-scratch.*
+scratch/
