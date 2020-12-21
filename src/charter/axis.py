@@ -17,6 +17,7 @@ from rich.console import RenderResult
 from rich.measure import Measurement
 from rich.table import Column
 from rich.text import Text
+from typing_extensions import Literal
 
 
 @dataclasses.dataclass()
@@ -602,3 +603,96 @@ class XAxis(Ticks):
                     )
                 )
         return xtick_labels
+
+
+class YAxis(Ticks):
+    """YAxis.
+
+    Args:
+        min_data (float): The minimum value of the data for the axis
+            dimension
+        max_data (float): The maximum value of the data for the axis
+            dimension.
+        min_tick_margin (int): The minimum spacing between ticks.
+        length (int): The length of the axis in characters.
+        width (int): The width of the axis in characters.
+        position (Literal["left", "right"]): Whether the axis is to
+            appear on the left or right side of the chart. By default
+            "right".
+        tick_values (List[float], optional): The values for the ticks.
+            By default will be automatically calculated.
+        tick_labels (List[str], optional): The labels for the ticks.
+            By default will be automatically calculated.
+        characters (Dict[str, str]): The characters to use in
+            creating the xline. Gets values from "yline", "left_ytick",
+            and "right_ytick" keys.
+        show_ticks (bool): Whether to show ticks on the yaxis. By
+            default True.
+
+    Attributes:
+        length (int): The length of the axis in characters.
+        characters (Dict[str, str]): The characters to use in creating
+            the xline. Gets values from "yline", "left_ytick",
+            "right_ytick", and "ytick_spacing" keys.
+        number_of_yticks (int)
+        tick_margin (int)
+        top_padding (int)
+        bottom_padding (int)
+        tick_positions (List[int])
+        table_columns (List[Column]): The columns that compose the y
+            axis.
+        show_ticks (bool): Whether xticks are shown on the xaxis.
+    """
+
+    def __init__(
+        self,
+        min_data: float,
+        max_data: float,
+        min_tick_margin: int,
+        length: int,
+        width: int,
+        position: Literal["left", "right"] = "right",
+        tick_values: Optional[List[float]] = None,
+        tick_labels: Optional[List[str]] = None,
+        characters: Optional[Dict[str, str]] = None,
+        show_ticks: bool = True,
+    ) -> None:
+        """Constructor."""
+        if position in ("left", "right"):
+            self.position = position
+        else:
+            raise ValueError("position must be 'left' or 'right'")
+        if any(measurement < 0 for measurement in (min_tick_margin, width, length)):
+            raise ValueError("min_tick_margin, width, and length must be 0 or greater")
+        self.width = width
+        self.length = length
+        self.show_ticks = show_ticks
+        self.characters = characters or {}
+        max_ticks = 1 + ((self.length - 1) // (1 + min_tick_margin))
+        super().__init__(
+            min_data=min_data,
+            max_data=max_data,
+            max_ticks=max_ticks,
+            tick_values=tick_values,
+            tick_labels=tick_labels,
+        )
+        self.number_of_yticks = len(self.tick_values) if self.tick_values else 0
+        tick_margin = (
+            (self.length - self.number_of_yticks) // (self.number_of_yticks - 1)
+            if 1 < self.number_of_yticks
+            else 0
+        )
+        print(tick_margin)
+        self.tick_margin = max(tick_margin, 0)
+        total_taken_space = self.number_of_yticks + (
+            self.tick_margin * (self.number_of_yticks - 1)
+        )
+        print(total_taken_space)
+        extra_space = max(self.length - total_taken_space, 0)
+        self.top_padding = extra_space // 2
+        self.bottom_padding = max(extra_space - self.top_padding, 0)
+        print(self.top_padding, self.bottom_padding)
+        self.tick_positions = list(
+            range(self.top_padding, self.length + 1, self.tick_margin + 1)
+        )
+        self.table_columns = self._make_yaxis_columns()

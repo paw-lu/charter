@@ -404,3 +404,33 @@ def test_axis_width_hypothesis(
     )
     table_width = sum(column.width for column in xaxis.table_columns)
     assert table_width == width
+
+
+@pytest.mark.parametrize(
+    "min_tick_margin, width, length", [(-1, 0, 0), (0, -1, 0), (0, 0, -1)]
+)
+def test_raises_value_error_on_negative(
+    min_tick_margin: int, width: int, length: int
+) -> None:
+    """It raises a ValueError when measurement values are negative."""
+    with pytest.raises(ValueError):
+        axis.YAxis(
+            min_data=0,
+            max_data=10,
+            min_tick_margin=min_tick_margin,
+            length=length,
+            width=width,
+        )
+
+
+def test_raises_value_error_on_bad_position() -> None:
+    """It raises a ValueError if the position is not valid."""
+    with pytest.raises(ValueError):
+        axis.YAxis(
+            min_data=0,
+            max_data=10,
+            min_tick_margin=2,
+            length=50,
+            width=10,
+            position="bad value",  # type: ignore[arg-type]
+        )
