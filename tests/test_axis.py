@@ -498,3 +498,42 @@ def test_ytick_labels_characters() -> None:
         + [rich.text.Text("0.00", style="ytick_label", overflow="ellipsis")]
     )
     assert yaxis.ytick_labels() == expected_ytick_labels
+
+
+def test_yline() -> None:
+    """It creates the y line."""
+    yaxis = axis.YAxis(
+        min_data=0, max_data=5, min_tick_margin=2, length=5, width=10, position="left",
+    )
+    ytick = rich.text.Text("┫", style="ytick")
+    yline = rich.text.Text("┃", style="yaxis")
+    expected_yline = [ytick] + 3 * [yline] + [ytick]
+    assert yaxis.yline() == expected_yline
+
+
+def test_yline_characters() -> None:
+    """It uses the provided characters when drawing the y line."""
+    yaxis = axis.YAxis(
+        min_data=0,
+        max_data=5,
+        min_tick_margin=2,
+        length=5,
+        width=10,
+        position="left",
+        characters={"yline": "a", "left_tick": "b"},
+    )
+    ytick = rich.text.Text("b", style="ytick")
+    yline = rich.text.Text("a", style="yaxis")
+    expected_yline = [ytick] + 3 * [yline] + [ytick]
+    assert yaxis.yline() == expected_yline
+
+
+def test_yline_right() -> None:
+    """It uses the right character when positioned on the right."""
+    yaxis = axis.YAxis(
+        min_data=0, max_data=5, min_tick_margin=2, length=5, width=10, position="right",
+    )
+    ytick = rich.text.Text("┣", style="ytick")
+    yline = rich.text.Text("┃", style="yaxis")
+    expected_yline = [ytick] + 3 * [yline] + [ytick]
+    assert yaxis.yline() == expected_yline

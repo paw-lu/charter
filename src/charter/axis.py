@@ -717,6 +717,36 @@ class YAxis(Ticks):
         )
         return yaxis_columns
 
+    def yline(self) -> List[Text]:
+        """Create the yline.
+
+        Returns:
+            Text: The xline row of the chart.
+        """
+        yline_character = self.characters.get("yline", "┃")
+        if not self.show_ticks:
+            ytick_character = yline_character
+        elif self.position == "left":
+            ytick_character = self.characters.get("left_tick", "┫")
+        else:
+            ytick_character = self.characters.get("right_ytick", "┣")
+        tick_positions = set(self.tick_positions)
+        yline = [
+            rich.text.Text(ytick_character, style="ytick")
+            if row in tick_positions
+            else rich.text.Text(yline_character, style="yaxis")
+            for row in range(self.top_padding, self.length - self.bottom_padding)
+        ]
+        yline = (
+            self.top_padding * [rich.text.Text(yline_character, style="yaxis")]
+            + yline
+            + self.bottom_padding * [rich.text.Text(yline_character, style="yaxis")]
+        )
+        print(yline)
+        print(tick_positions)
+        print(self.top_padding)
+        return yline
+
     def ytick_labels(self) -> List[Text]:
         """Create the ylabels.
 
