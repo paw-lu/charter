@@ -683,16 +683,13 @@ class YAxis(Ticks):
             if 1 < self.number_of_yticks
             else 0
         )
-        print(tick_margin)
         self.tick_margin = max(tick_margin, 0)
         total_taken_space = self.number_of_yticks + (
             self.tick_margin * (self.number_of_yticks - 1)
         )
-        print(total_taken_space)
         extra_space = max(self.length - total_taken_space, 0)
         self.top_padding = extra_space // 2
         self.bottom_padding = max(extra_space - self.top_padding, 0)
-        print(self.top_padding, self.bottom_padding)
         self.tick_positions = list(
             range(self.top_padding, self.length + 1, self.tick_margin + 1)
         )
@@ -742,9 +739,6 @@ class YAxis(Ticks):
             + yline
             + self.bottom_padding * [rich.text.Text(yline_character, style="yaxis")]
         )
-        print(yline)
-        print(tick_positions)
-        print(self.top_padding)
         return yline
 
     def ytick_labels(self) -> List[Text]:
