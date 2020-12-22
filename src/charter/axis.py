@@ -695,6 +695,31 @@ class YAxis(Ticks):
         )
         self.table_columns = self._make_yaxis_columns()
 
+    def __rich_console__(
+        self, console: Console, options: ConsoleOptions
+    ) -> RenderResult:
+        """Console protocol for Rich."""
+        yaxis_grid = rich.table.Table(
+            *self.table_columns,
+            width=self.width,
+            box=None,
+            collapse_padding=True,
+            pad_edge=False,
+            show_edge=False,
+            show_footer=False,
+            show_lines=False,
+            show_header=False,
+            padding=(0, 0),
+        )
+        yaxis_rows = (
+            zip(self.yline(), self.ytick_labels(),)
+            if self.position == "right"
+            else zip(self.ytick_labels(), self.yline(),)
+        )
+        for row in yaxis_rows:
+            yaxis_grid.add_row(*row)
+        yield yaxis_grid
+
     def __rich_measure__(self, console: Console, max_width: int) -> Measurement:
         """The width of the renderable."""
         return rich.measure.Measurement(minimum=self.width, maximum=max_width)

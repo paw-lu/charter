@@ -15,8 +15,8 @@ from typing_extensions import Literal
 from charter import axis
 
 
-def test_console_render() -> None:
-    """It renders an xaxis."""
+def test_xaxis_console_render() -> None:
+    """It renders an x axis."""
     width = 80
     console = rich.console.Console(file=io.StringIO(), width=width)
     console.print(
@@ -584,3 +584,14 @@ def test_yaxis_rich_measure() -> None:
     console = rich.console.Console()
     min_width, _ = yaxis.__rich_measure__(console=console, max_width=100)
     assert min_width == width
+
+
+def test_yaxis_console_render() -> None:
+    """It renders a y axis."""
+    width = 7
+    console = rich.console.Console(file=io.StringIO(), width=width)
+    console.print(
+        axis.YAxis(min_data=15, max_data=150, min_tick_margin=2, width=width, length=5)
+    )
+    output = console.file.getvalue()  # type: ignore[attr-defined]
+    assert output == "┣150.00\n┃      \n┃      \n┃      \n┣15.00 \n"
