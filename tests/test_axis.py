@@ -537,3 +537,17 @@ def test_yline_right() -> None:
     yline = rich.text.Text("┃", style="yaxis")
     expected_yline = [ytick] + 3 * [yline] + [ytick]
     assert yaxis.yline() == expected_yline
+
+
+def test_yline_no_ticks() -> None:
+    """It doesn't draw ticks when show_ticks is set to False."""
+    yaxis = axis.YAxis(
+        min_data=0,
+        max_data=5,
+        min_tick_margin=2,
+        length=5,
+        width=10,
+        position="right",
+        show_ticks=False,
+    )
+    assert yaxis.yline() == 5 * [rich.text.Text("┃", style="yaxis")]
