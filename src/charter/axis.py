@@ -695,6 +695,10 @@ class YAxis(Ticks):
         )
         self.table_columns = self._make_yaxis_columns()
 
+    def __rich_measure__(self, console: Console, max_width: int) -> Measurement:
+        """The width of the renderable."""
+        return rich.measure.Measurement(minimum=self.width, maximum=max_width)
+
     def _make_yaxis_columns(self) -> List[Column]:
         """Create the columns that compose the y axis."""
         ytick_column = rich.table.Column(

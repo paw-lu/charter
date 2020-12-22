@@ -32,14 +32,15 @@ def test_console_render() -> None:
     )
 
 
-def test_rich_measure() -> None:
+def test_xaxis_rich_measure() -> None:
     """It's min width measures the axis' width."""
     width = 80
     xaxis = axis.XAxis(
         min_data=15, max_data=150, tick_padding=3, min_tick_margin=2, width=width
     )
     console = rich.console.Console()
-    assert xaxis.__rich_measure__(console=console, max_width=100).minimum == width
+    min_width, _ = xaxis.__rich_measure__(console=console, max_width=100)
+    assert min_width == width
 
 
 def test_tick_labels() -> None:
@@ -572,3 +573,14 @@ def test_long_labels() -> None:
         rich.text.Text("zzyyxx", style="ytick_label", overflow="ellipsis"),
     ]
     assert yaxis.ytick_labels() == expected_ylabels
+
+
+def test_yaxis_rich_measure() -> None:
+    """It's min width measures the y axis' width."""
+    width = 5
+    yaxis = axis.YAxis(
+        min_data=15, max_data=150, min_tick_margin=2, width=width, length=30
+    )
+    console = rich.console.Console()
+    min_width, _ = yaxis.__rich_measure__(console=console, max_width=100)
+    assert min_width == width
