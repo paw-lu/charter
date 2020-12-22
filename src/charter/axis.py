@@ -760,7 +760,11 @@ class YAxis(Ticks):
         for row in range(self.top_padding, self.length - self.bottom_padding):
             if row in tick_positions or leftover:
                 full_label = leftover or tick_labels.pop(-1)
-                if label_width < len(full_label) and (row + 1) not in tick_positions:
+                if (
+                    label_width < len(full_label)
+                    and (row + 1) not in tick_positions
+                    and row != self.length - self.bottom_padding - 1
+                ):
                     label = full_label[:label_width]
                     leftover = full_label[label_width:]
                 else:

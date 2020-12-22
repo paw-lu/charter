@@ -551,3 +551,24 @@ def test_yline_no_ticks() -> None:
         show_ticks=False,
     )
     assert yaxis.yline() == 5 * [rich.text.Text("┃", style="yaxis")]
+
+
+def test_long_labels() -> None:
+    """It overflows tick labels to the next line if needed."""
+    yaxis = axis.YAxis(
+        min_data=0,
+        max_data=5,
+        min_tick_margin=2,
+        length=5,
+        width=3,
+        position="right",
+        tick_labels=["zzyyxx", "aabbccddee"],
+    )
+    expected_ylabels = [
+        rich.text.Text("aa", style="ytick_label", overflow="ellipsis"),
+        rich.text.Text("bb", style="ytick_label", overflow="ellipsis"),
+        rich.text.Text("cc", style="ytick_label", overflow="ellipsis"),
+        rich.text.Text("ddee", style="ytick_label", overflow="ellipsis"),
+        rich.text.Text("zzyyxx", style="ytick_label", overflow="ellipsis"),
+    ]
+    assert yaxis.ytick_labels() == expected_ylabels
